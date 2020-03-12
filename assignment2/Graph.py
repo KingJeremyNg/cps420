@@ -242,6 +242,16 @@ class Graph:
         Returns a Hamiltonian circuit of type Walk for the graph if one exists,
         or None if none exists.
         """
+        if (self.totalV < 3):
+            return None
+        
+        Hamiltonian = Walk(self.totalV + 1)
+
+        if (self.tryVisiting(0, 0, Hamiltonian) == True):
+            return Hamiltonian
+        
+        print(Hamiltonian.getVertices())
+
         return None
 
     def tryVisiting(self, vertex, totalvisited, Hamiltonian):
@@ -259,4 +269,30 @@ class Graph:
 
         Returns True iff a Hamiltonian circuit has been found and False otherwise
         """
+        # Add vertex to walk
+        Hamiltonian.addVertex(vertex)
+
+        # Base case to check if walk is a hamiltonian
+        if totalvisited == self.totalV - 1:
+            if (self.edges[vertex][Hamiltonian.getVertex(0)] == 0):
+                Hamiltonian.removeLastVertex()
+                return False
+            else:
+                Hamiltonian.addVertex(Hamiltonian.getVertex(0))
+                return True
+        
+        # Check for neighbours
+        neighbours = self.edges[vertex]
+        stack = []
+        for index in range(len(neighbours)):
+            if neighbours[index] == 1:
+                stack.append(index)
+        
+        # Try visiting neighbours
+        for n in range(len(stack)):
+            if (stack[n] not in Hamiltonian.getVertices()):
+                if (self.tryVisiting(stack[n], totalvisited + 1, Hamiltonian)):
+                    return True
+
+        Hamiltonian.removeLastVertex()
         return False
